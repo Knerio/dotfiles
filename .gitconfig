@@ -1,0 +1,22 @@
+[user]
+	emal = derioreal63@gmail.com
+	name = Dario Pranjic
+	email = derioreal63@gmail.com
+	signingkey = D0743646468E13F5
+[tag]
+	gpgSign = true
+[commit]
+	gpgsign = true
+[credential]
+	helper = store
+[push]
+	autoSetupRemote = true
+[pull]
+	rebase = true
+
+[alias]
+        clear-branches = !sh -c 'git fetch && git branch --merged | egrep -v \"(^\\*|master|main)\"' -
+        clear-branches-run = !sh -c 'git clear-branches | xargs git branch -d' -
+	lg = log --oneline --graph --decorate
+[core]
+	editor = vim
