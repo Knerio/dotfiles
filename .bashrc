@@ -60,9 +60,9 @@ parse_git_branch() {
     local branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
     if [ -n "$branch" ]; then
         if [ ${#branch} -gt 30 ]; then
-            echo "${branch:0:30}..."
+            echo "${branch:0:30}... "
         else
-            echo "$branch"
+            echo "$branch "
         fi
     fi
 }
