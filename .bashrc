@@ -126,3 +126,17 @@ fi
 eval "$(/home/dario-pranjic/.local/bin/mise activate bash)"
 
 alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+
+runSagittariusChecks() {
+  echo "Running rubocop"
+  time bundle exec rubocop -A
+  echo "Ran rubocop"
+  echo "Compiling docs"
+  time bin/rake graphql:compile_docs
+  echo "Compiled docs"
+  echo "Running tests"
+  time bin/rspec
+  echo "Ran tests"
+}
+
+alias sag-checks='runSagittariusChecks'
