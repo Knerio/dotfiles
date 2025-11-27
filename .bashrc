@@ -126,6 +126,7 @@ fi
 eval "$(/home/dario-pranjic/.local/bin/mise activate bash)"
 
 alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+alias idea='intellij-idea-ultimate'
 
 runSagittariusChecks() {
   echo "Running rubocop"
