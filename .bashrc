@@ -57,10 +57,51 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 parse_git_branch() {
-    local branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    if [ -n "$branch" ]; then
-        echo "$branch "
+    # Get current branch
+    local branch
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || return
+
+    # Detect main/master
+    local main_branch
+    if git show-ref --verify --quiet refs/heads/main; then
+        main_branch="main"
+    elif git show-ref --verify --quiet refs/heads/master; then
+        main_branch="master"
+    else
+        main_branch=""
     fi
+
+    local dirty=""
+
+    # Dirty if staged or unstaged changes exist
+    ! git diff --quiet 2>/dev/null && dirty="*"
+    ! git diff --cached --quiet 2>/dev/null && dirty="*"
+
+    # Ahead/behind relative to upstream
+    local upstream ahead behind upstream_status=""
+    upstream=$(git rev-parse --abbrev-ref @{u} 2>/dev/null)
+
+    if [ -n "$upstream" ]; then
+        read behind ahead <<<"$(git rev-list --left-right --count "$upstream"...HEAD 2>/dev/null)"
+        [ "$ahead" -gt 0 ] && upstream_status+="↑$ahead"
+        [ "$behind" -gt 0 ] && upstream_status+="↓$behind"
+    fi
+
+    # Ahead/behind relative to main/master
+    local main_status=""
+    if [ -n "$main_branch" ] && [ "$branch" != "$main_branch" ]; then
+        read main_behind main_ahead <<<"$(git rev-list --left-right --count "$main_branch"...HEAD 2>/dev/null)"
+        [ "$main_ahead" -gt 0 ] && main_status+="⇡$main_ahead"
+        [ "$main_behind" -gt 0 ] && main_status+="⇣$main_behind"
+    fi
+
+    # Combine status info (only add spaces when needed)
+    local status=""
+    [ -n "$dirty" ] && status+="$dirty"
+    [ -n "$upstream_status" ] && status+=" $upstream_status "
+    [ -n "$main_status" ] && status+=" $main_status "
+
+    echo "${branch}${status}"
 }
 
 if [ "$color_prompt" = yes ]; then
