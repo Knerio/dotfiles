@@ -56,58 +56,68 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-parse_git_branch() {
-    # Get current branch
+parse_git_info() {
+    # Ensure inside a git repository
     local branch
     branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || return
 
     # Detect main/master
-    local main_branch
+    local main_branch=""
     if git show-ref --verify --quiet refs/heads/main; then
         main_branch="main"
     elif git show-ref --verify --quiet refs/heads/master; then
         main_branch="master"
-    else
-        main_branch=""
     fi
 
+    # Check dirty status
     local dirty=""
+    if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
+        dirty="*"
+    fi
 
-    # Dirty if staged or unstaged changes exist
-    ! git diff --quiet 2>/dev/null && dirty="*"
-    ! git diff --cached --quiet 2>/dev/null && dirty="*"
-
-    # Ahead/behind relative to upstream
-    local upstream ahead behind upstream_status=""
+    # Determine upstream status
+    local upstream upstream_status=""
     upstream=$(git rev-parse --abbrev-ref @{u} 2>/dev/null)
 
     if [ -n "$upstream" ]; then
+        local behind ahead
         read behind ahead <<<"$(git rev-list --left-right --count "$upstream"...HEAD 2>/dev/null)"
-        [ "$ahead" -gt 0 ] && upstream_status+="↑$ahead"
-        [ "$behind" -gt 0 ] && upstream_status+="↓$behind"
+
+        if [ "$ahead" -gt 0 ] && [ "$behind" -gt 0 ]; then
+            upstream_status+="↕${ahead}/${behind}"  # diverged
+        else
+            [ "$ahead" -gt 0 ] && upstream_status+="↑$ahead"
+            [ "$behind" -gt 0 ] && upstream_status+="↓$behind"
+        fi
+    else
+        upstream_status="⨯no-upstream"
     fi
 
-    # Ahead/behind relative to main/master
+    # Compare with main/master
     local main_status=""
     if [ -n "$main_branch" ] && [ "$branch" != "$main_branch" ]; then
-        read main_behind main_ahead <<<"$(git rev-list --left-right --count "$main_branch"...HEAD 2>/dev/null)"
-        [ "$main_ahead" -gt 0 ] && main_status+="⇡$main_ahead"
-        [ "$main_behind" -gt 0 ] && main_status+="⇣$main_behind"
+        local mbehind mahead
+        read mbehind mahead <<<"$(git rev-list --left-right --count "$main_branch"...HEAD 2>/dev/null)"
+        [ "$mahead" -gt 0 ] && main_status+="⇡$mahead"
+        [ "$mbehind" -gt 0 ] && main_status+="⇣$mbehind"
     fi
 
-    # Combine status info (only add spaces when needed)
+    # Build final status string
     local status=""
-    [ -n "$dirty" ] && status+="$dirty"
-    [ -n "$upstream_status" ] && status+=" $upstream_status "
-    [ -n "$main_status" ] && status+=" $main_status "
+    [ -n "$upstream_status" ] && status+="$upstream_status "
+    [ -n "$main_status" ] && status+="$main_status "
 
-    echo "${branch}${status}"
+    # Trim trailing spaces
+    status=$(echo "$status" | sed 's/ *$//')
+
+    # Branch + dirty star right next to it
+    echo "${branch}${dirty}${status:+ $status}"
 }
 
 if [ "$color_prompt" = yes ]; then
-    PS1="${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\] \$(parse_git_branch)\[\033[00m\]\n\$ "
+    PS1="${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\] \$(parse_git_info)\[\033[00m\]\n\$ "
 else
-    PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w \$(parse_git_branch)\n\$ "
+    PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w \$(parse_git_info)\n\$ "
 fi
 
 unset color_prompt force_color_prompt
