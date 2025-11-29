@@ -180,15 +180,34 @@ alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 alias idea='intellij-idea-ultimate'
 
 runSagittariusChecks() {
+  pids=()
+
+  cleanup() {
+    echo "Caught Ctrl+C — killing all background jobs..."
+    for pid in "${pids[@]}"; do
+      kill "$pid" 2>/dev/null
+    done
+    return 1
+  }
+  trap cleanup INT
+
   echo "Running rubocop"
-  time bundle exec rubocop -A
-  echo "Ran rubocop"
+  bundle exec rubocop -A &
+  pids+=($!)
+
   echo "Compiling docs"
-  time bin/rake graphql:compile_docs
-  echo "Compiled docs"
+  bin/rake graphql:compile_docs &
+  pids+=($!)
+
   echo "Running tests"
-  time bin/rspec
-  echo "Ran tests"
+  bin/rspec &
+  pids+=($!)
+
+  for pid in "${pids[@]}"; do
+    wait "$pid"
+  done
+
+  echo "All tasks finished"
 }
 
 alias sag-checks='runSagittariusChecks'
