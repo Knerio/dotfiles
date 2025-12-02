@@ -11,6 +11,9 @@ return {
         changedelete = { text = "~" },
       },
       current_line_blame = true, -- show author/time for current line
+      current_line_blame_opts = {
+         delay = 0,
+      },
       on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
         vim.keymap.set('n', '<leader>hs', gs.stage_hunk, { buffer = bufnr })
