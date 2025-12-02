@@ -61,6 +61,24 @@ require('lazy').setup({
       })
     end,
   },
+  -- Syntax highlighting with Treesitter
+  {
+    'nvim-treesitter/nvim-treesitter',
+    build = ':TSUpdate', -- Command to run after installation
+    config = function()
+      require('nvim-treesitter.configs').setup({
+        ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "ruby", "python", "javascript", "typescript", "html", "css" },
+        sync_install = false,
+        auto_install = true,
+        highlight = {
+          enable = true,
+          delay = 0,
+          disable_extra_render = true,
+        },
+        indent = { enable = true, disable = { "python" } },
+      })
+    end,
+  },
 })
 
 -- Keymaps for Telescope
