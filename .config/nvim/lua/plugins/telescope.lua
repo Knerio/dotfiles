@@ -24,4 +24,21 @@ return {
       require("telescope").load_extension("ui-select")
     end,
   },
+  {
+    "ahmedkhalf/project.nvim",
+    config = function()
+      require("project_nvim").setup({
+        detection_methods = { "pattern" },
+        patterns = { ".git", "package.json", "Cargo.toml", "Makefile" },
+      })
+    end,
+  },
+  {
+    "nvim-telescope/telescope-project.nvim",
+    requires = { "nvim-telescope/telescope.nvim" },
+    config = function()
+      -- Load extension after telescope & project.nvim are fully loaded
+      require("telescope").load_extension("project")
+    end,
+  },
 }
