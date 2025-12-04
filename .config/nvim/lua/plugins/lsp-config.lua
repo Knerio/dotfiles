@@ -16,6 +16,8 @@ return {
       auto_install = true,
       ensure_installed = {
         "ruby_lsp",
+        "ts_ls",
+        "jsonls",
       },
     },
   },
@@ -27,6 +29,7 @@ return {
     config = function()
       -- Capabilities (required for nvim-cmp)
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
 
       ---------------------------------------------------------------------
       -- Modern Neovim 0.11+ API
@@ -44,7 +47,29 @@ return {
       -- Enable the server (starts automatically when opening filetypes)
       vim.lsp.enable("ruby_lsp")
 
-      ---------------------------------------------------------------------
+
+      vim.lsp.config("ts_ls", {
+        capabilities = capabilities,
+        -- add any ruby-lsp settings here if needed
+        settings = {
+          formatting = { enabled = true }, -- enable Rubocop formatting
+        },
+      })
+     
+      -- Enable the server (starts automatically when opening filetypes)
+      vim.lsp.enable("ts_ls")      ---------------------------------------------------------------------
+
+      vim.lsp.config("jsonls", {
+        capabilities = capabilities,
+        settings = {
+        json = {
+          validate = { enable = true },
+          format = { enable = true },
+          },
+        },
+      }) 
+
+      vim.lsp.enable("jsonls")
       -- LSP Keymaps
       ---------------------------------------------------------------------
       vim.keymap.set("n", "K", vim.lsp.buf.hover, {})

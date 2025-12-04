@@ -23,6 +23,8 @@ vim.opt.tabstop = 4        -- display tabs as 4 spaces
 vim.opt.shiftwidth = 4     -- indent size
 vim.opt.softtabstop = 4    -- number of spaces when pressing TAB
 vim.opt.smartindent = true -- auto indent new lines
+vim.opt.autowrite = true
+vim.opt.autowriteall = true
 
 vim.api.nvim_set_keymap('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
 
