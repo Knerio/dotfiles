@@ -29,10 +29,4 @@ vim.api.nvim_set_keymap('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent =
 
 vim.keymap.set("n", "<leader>th", ":split | term<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>p", ":Telescope projects<CR>", { noremap = true, silent = true })
-
--- <leader>f to make current window full screen
-vim.keymap.set("n", "<leader>f", function()
-  vim.cmd("wincmd _<CR>")  -- maximize height
-  vim.cmd("wincmd |<CR>")  -- maximize width
-end, { desc = "Maximize current window" })
-
+vim.keymap.set("n", "<leader>F", "<C-w>_", { noremap = true, silent = true, nowait = true })
