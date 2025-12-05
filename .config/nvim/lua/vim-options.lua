@@ -30,5 +30,6 @@ vim.api.nvim_set_keymap('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent =
 
 
 vim.keymap.set("n", "<leader>th", ":split | term<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>tv", ":vsplit | term<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>p", ":Telescope projects<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>F", "<C-w>_", { noremap = true, silent = true, nowait = true })
