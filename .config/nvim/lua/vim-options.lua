@@ -12,6 +12,7 @@ vim.keymap.set('n', '<c-j>', ':wincmd j<CR>')
 vim.keymap.set('n', '<c-h>', ':wincmd h<CR>')
 vim.keymap.set('n', '<c-l>', ':wincmd l<CR>')
 
+
 vim.keymap.set('n', '<leader>h', ':nohlsearch<CR>')
 vim.wo.number = true
 
@@ -25,6 +26,12 @@ vim.opt.softtabstop = 4    -- number of spaces when pressing TAB
 vim.opt.smartindent = true -- auto indent new lines
 vim.opt.autowrite = true
 vim.opt.autowriteall = true
+
+vim.api.nvim_create_autocmd({ "WinLeave", "TabLeave", "FocusLost" }, {
+  callback = function()
+    vim.cmd("silent! wall")
+  end,
+})
 
 vim.api.nvim_set_keymap('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
 

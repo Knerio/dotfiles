@@ -14,11 +14,6 @@ return {
     lazy = false,
     opts = {
       auto_install = true,
-      ensure_installed = {
-        "ruby_lsp",
-        "ts_ls",
-        "jsonls",
-      },
     },
   },
 
@@ -36,41 +31,28 @@ return {
       -- You define configs with vim.lsp.config(), then enable the server.
       ---------------------------------------------------------------------
 
+      local settings = {
+        formatting = { enabled = true }
+      }
+
       vim.lsp.config("ruby_lsp", {
-        capabilities = capabilities,
-        -- add any ruby-lsp settings here if needed
-        settings = {
-          formatting = { enabled = true }, -- enable Rubocop formatting
-        },
+         capabilities = capabilities,
+         settings = settings,
       })
-
-      -- Enable the server (starts automatically when opening filetypes)
-      vim.lsp.enable("ruby_lsp")
-
-
+      vim.lsp.config("lua_ls", {
+         capabilities = capabilities,
+         settings = settings,
+      })
       vim.lsp.config("ts_ls", {
-        capabilities = capabilities,
-        -- add any ruby-lsp settings here if needed
-        settings = {
-          formatting = { enabled = true }, -- enable Rubocop formatting
-        },
+         capabilities = capabilities,
+         settings = settings,
       })
-     
-      -- Enable the server (starts automatically when opening filetypes)
-      vim.lsp.enable("ts_ls")      ---------------------------------------------------------------------
-
       vim.lsp.config("jsonls", {
-        capabilities = capabilities,
-        settings = {
-        json = {
-          validate = { enable = true },
-          format = { enable = true },
-          },
-        },
-      }) 
+         capabilities = capabilities,
+         settings = settings,
+      })
 
-      vim.lsp.enable("jsonls")
-      -- LSP Keymaps
+  -- LSP Keymaps
       ---------------------------------------------------------------------
       vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
       vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, {})
