@@ -1,0 +1,6 @@
+[tools]
+lazygit = "latest"
+lua = "latest"
+neovim = "latest"
+node = "latest"
+ruby = "latest"
