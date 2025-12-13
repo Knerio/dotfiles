@@ -20,3 +20,5 @@
 	lg = log --oneline --graph --decorate
 [core]
 	editor = vim
+[merge]
+	tool = vimdiff
